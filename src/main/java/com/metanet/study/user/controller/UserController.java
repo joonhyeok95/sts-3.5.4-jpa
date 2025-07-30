@@ -1,0 +1,64 @@
+package com.metanet.study.user.controller;
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.metanet.study.user.dto.UserRequestDto;
+import com.metanet.study.user.dto.UserResponseDto;
+import com.metanet.study.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+public class UserController {
+
+  private final UserService userService;
+
+  // GlobalResponseWrapper 를 활용하기
+  @GetMapping
+  public List<UserResponseDto> getAllUsers(HttpServletRequest request) {
+    List<UserResponseDto> users = userService.getAllUsers();
+    return users;
+  }
+
+  // ResponseEntity 를 활용하기
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") Long id,
+      HttpServletRequest request) {
+    return userService.getUserById(id).map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @PostMapping
+  public int createUser(@Valid @RequestBody UserRequestDto dto) {
+    UserResponseDto created = userService.createUser(dto);
+    return 1;
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") Long id,
+      @Valid @RequestBody UserRequestDto dto) {
+    try {
+      UserResponseDto updated = userService.updateUser(id, dto);
+      return ResponseEntity.ok(updated);
+    } catch (RuntimeException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    userService.deleteUser(id);
+    return ResponseEntity.noContent().build();
+  }
+}
