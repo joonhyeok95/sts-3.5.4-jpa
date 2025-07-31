@@ -15,15 +15,24 @@ spring:
       validation-timeout: 5000
       pool-name: MyHikariCP
       auto-commit: true
+    p6spy:
+      enable-logging: true
+      multiline: true
+      logging: slf4j
+      log-format: |-
+        #%currentTime | %executionTime ms | %category | connection %connectionId | %sql
+#      log-format: |-
+#        time=%(currentTime)|executionTime=%(executionTime)|category=%(category)|connectionId=%(connectionId)|sql=%(sqlSingleLine)
   jpa:
     hibernate:
       ddl-auto: update           # 개발: update/ 운영: validate 또는 none
-    show-sql: true              # 디버깅 시 true, 운영에서는 false 권장
+    show-sql: false              # 디버깅 시 true, 운영에서는 false 권장
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect # 버전에 맞는 Dialect 지정
-
+    open-in-view: false    # OSIV 반드시 false
 logging:
   level: 
-    root: DEBUG
+    root: INFO
+    p6spy: debug

@@ -2,8 +2,8 @@ package com.metanet.study.user.entity;
 
 
 import com.metanet.study.dept.entity.Department;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +31,7 @@ public class User {
 
   private String email;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "department_id") // FK 컬럼명 지정
   private Department department;
 
