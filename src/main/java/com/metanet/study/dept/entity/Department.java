@@ -1,9 +1,8 @@
 package com.metanet.study.dept.entity;
 
 import java.util.List;
-
+import org.hibernate.annotations.BatchSize;
 import com.metanet.study.user.entity.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +28,7 @@ public class Department {
 
   // 양방향 연관 시 (선택사항)
   @OneToMany(mappedBy = "department")
+  @BatchSize(size = 100)
   private List<User> users;
 
 }
