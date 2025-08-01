@@ -24,7 +24,6 @@ public class MailService {
     context.setVariables(variables);
     String html = templateEngine.process("email/email-template", context);
     log.info("Generated html:\n{}", html); // 로그에 치환된 결과가 나와야 정상
-    log.info("data:{}", variables.get("name"));
     MimeMessage message = mailSender.createMimeMessage();
     MimeMessageHelper helper;
     try {
@@ -36,7 +35,6 @@ public class MailService {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    log.info("실제 메일 body:{}", html);
     mailSender.send(message);
   }
 }
