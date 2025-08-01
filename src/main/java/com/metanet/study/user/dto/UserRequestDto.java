@@ -14,7 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserRequestDto {
 
-  @NotBlank(message = "id is mandatory")
   private Long id;
 
   @NotBlank(message = "Name is mandatory")
