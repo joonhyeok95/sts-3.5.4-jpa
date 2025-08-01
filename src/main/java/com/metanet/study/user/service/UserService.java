@@ -3,14 +3,18 @@ package com.metanet.study.user.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.metanet.study.dept.entity.Department;
 import com.metanet.study.dept.mapper.DeptMapper;
 import com.metanet.study.dept.repository.DepartmentRepository;
+import com.metanet.study.global.domain.PageResponse;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
 import com.metanet.study.user.entity.User;
+import com.metanet.study.user.mapper.UserMapper;
 import com.metanet.study.user.reopository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +25,6 @@ public class UserService {
   private final UserRepository userRepository;
   private final DepartmentRepository departmentRepository;
 
-
   @Transactional(readOnly = true)
   public List<UserResponseDto> getAllUsers() {
     return userRepository.findAll().stream()
@@ -29,6 +32,17 @@ public class UserService {
             .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
             .build())
         .collect(Collectors.toList());
+  }
+
+  // 페이징처리
+  @Transactional(readOnly = true)
+  public PageResponse<UserResponseDto> getAllUsersPage(Pageable pageable) {
+    Page<User> page = userRepository.findAll(pageable);
+    Page<UserResponseDto> userPage = page.map(UserMapper::toResponseDto);
+    return new PageResponse<>(userPage);
+
+    // return users.map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
+    // .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment())).build());
   }
 
   @Transactional(readOnly = true)
