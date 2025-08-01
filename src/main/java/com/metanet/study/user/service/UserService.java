@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.metanet.study.dept.dto.DepartmentDto;
 import com.metanet.study.dept.entity.Department;
+import com.metanet.study.dept.mapper.DeptMapper;
 import com.metanet.study.dept.repository.DepartmentRepository;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
@@ -21,18 +21,13 @@ public class UserService {
   private final UserRepository userRepository;
   private final DepartmentRepository departmentRepository;
 
-  private DepartmentDto toDepartmentDto(Department department) {
-    if (department == null) {
-      return null;
-    }
-    return DepartmentDto.builder().id(department.getId()).name(department.getName()).build();
-  }
 
   @Transactional(readOnly = true)
   public List<UserResponseDto> getAllUsers() {
     return userRepository.findAll().stream()
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).department(toDepartmentDto(user.getDepartment())).build())
+            .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
+            .build())
         .collect(Collectors.toList());
   }
 
@@ -40,7 +35,8 @@ public class UserService {
   public Optional<UserResponseDto> getUserById(Long id) {
     return userRepository.findById(id)
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).department(toDepartmentDto(user.getDepartment())).build());
+            .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
+            .build());
   }
 
   @Transactional
@@ -57,7 +53,7 @@ public class UserService {
     User saved = userRepository.save(user);
 
     return new UserResponseDto(saved.getId(), saved.getName(), saved.getEmail(),
-        toDepartmentDto(saved.getDepartment()));
+        DeptMapper.toResponseDto(saved.getDepartment()));
   }
 
   @Transactional
@@ -72,7 +68,7 @@ public class UserService {
       return userRepository.save(user);
     }).orElseThrow(() -> new RuntimeException("User not found"));
     return new UserResponseDto(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),
-        toDepartmentDto(updatedUser.getDepartment()));
+        DeptMapper.toResponseDto(updatedUser.getDepartment()));
   }
 
   @Transactional
