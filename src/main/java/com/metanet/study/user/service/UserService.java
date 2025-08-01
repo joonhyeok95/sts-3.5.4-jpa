@@ -2,6 +2,7 @@ package com.metanet.study.user.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,10 @@ import com.metanet.study.user.entity.User;
 import com.metanet.study.user.mapper.UserMapper;
 import com.metanet.study.user.reopository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
@@ -27,6 +30,7 @@ public class UserService {
 
   @Transactional(readOnly = true)
   public List<UserResponseDto> getAllUsers() {
+    // 대규모 데이터 OOM 발생 처리 개선 필요
     return userRepository.findAll().stream()
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
             .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
@@ -39,10 +43,17 @@ public class UserService {
   public PageResponse<UserResponseDto> getAllUsersPage(Pageable pageable) {
     Page<User> page = userRepository.findAll(pageable);
     Page<UserResponseDto> userPage = page.map(UserMapper::toResponseDto);
+    // 실제 처리시간 계산을 위해 임의로 타이머처리
+    try {
+      // 1~10초의 랜덤 정수(1 이상 10 이하)
+      int randomSeconds = ThreadLocalRandom.current().nextInt(1, 11);
+      long randomMillis = randomSeconds * 1000L;
+      log.info(randomSeconds + "초 delay... Now Page:" + pageable.getPageNumber());
+      Thread.sleep(randomMillis);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     return new PageResponse<>(userPage);
-
-    // return users.map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-    // .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment())).build());
   }
 
   @Transactional(readOnly = true)
