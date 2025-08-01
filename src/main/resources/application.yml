@@ -33,6 +33,18 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect # 버전에 맞는 Dialect 지정
         default_batch_fetch_size: 100
     open-in-view: false    # OSIV 반드시 false
+  mail:
+    host: smtp.gmail.com       # SMTP 서버 호스트
+    port: 587                  # SMTP 포트 (587은 TLS용)
+    username: your_email@gmail.com  # SMTP 로그인 아이디 (이메일 주소)
+    password: your_app_password      # SMTP 로그인 비밀번호 (구글 앱 비밀번호)
+    properties:
+      mail:
+        smtp:
+          auth: true            # SMTP 인증 사용 여부
+          starttls:
+            enable: true        # TLS 사용 여부
+          timeout: 5000         # 메일 전송 타임아웃(ms)    
 logging:
   level: 
     root: INFO
