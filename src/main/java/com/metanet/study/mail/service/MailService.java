@@ -37,4 +37,11 @@ public class MailService {
     }
     mailSender.send(message);
   }
+
+  public void mailTemplateBinding(String to, String subject, Map<String, Object> variables) {
+    Context context = new Context();
+    context.setVariables(variables);
+    String html = templateEngine.process("email/sample", context);
+    log.info("Generated html:\n{}", html); // 로그에 치환된 결과가 나와야 정상
+  }
 }

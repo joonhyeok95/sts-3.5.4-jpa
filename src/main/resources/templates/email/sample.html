@@ -1,0 +1,33 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  객체 접근
+  <ul>
+    <li th:each="item : ${products}">
+      <span th:text="${item.name}"></span>
+      <span th:text="${item.price}"></span>
+    </li>
+  </ul> 
+  <!-- 내장 객체 및 함수: #strings, #lists, #maps, #dates 등 -->
+  자바 내장함수 사용
+  <p th:text="${T(java.time.LocalDate).now()}"></p>
+  <p th:text="${T(java.lang.Math).random()}"></p>
+
+  삼항연산
+  <span th:text="${name ?: '이름없음'}"></span>
+  <span th:text="${name != null ? name : '번호없음'}"></span>
+  값 할당 케이스
+  <div th:with="greeting=${name}, today=${T(java.time.LocalDate).now()}">
+    <p th:text="${greeting}"></p>
+    <p th:text="${today}"></p>
+  </div>
+  IF 문
+  <span th:if="${message}">활성</span>
+  <span th:unless="${message}">비활성</span>
+  switch 문
+  <div th:switch="${name}">
+    <p th:case="'Tester'">switch:샘플</p>
+    <p th:case="*">switch:그외</p>
+  </div>
+  
+  </body>
+</html>
