@@ -2,8 +2,11 @@ package com.metanet.study.user.entity;
 
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import com.metanet.study.dept.entity.Department;
+import com.metanet.study.role.entity.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,4 +44,10 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<UserRole> userRoles = new HashSet<>();
+
+  // 중간조인 UserRole에서 Role만 추출하는 편의 메서드 추가
+  public Set<Role> getRoles() {
+    return userRoles.stream().map(UserRole::getRole).filter(Objects::nonNull)
+        .collect(Collectors.toSet());
+  }
 }
