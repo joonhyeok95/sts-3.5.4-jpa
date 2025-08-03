@@ -42,7 +42,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id,
+  public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") Long id,
       HttpServletRequest request) {
     return userService.getUserById(id).map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -55,7 +55,7 @@ public class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
+  public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") Long id,
       @Valid @RequestBody UserRequestDto dto) {
     try {
       UserResponseDto updated = userService.updateUser(id, dto);
@@ -66,7 +66,7 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
     userService.deleteUser(id);
     return ResponseEntity.noContent().build();
   }
