@@ -46,7 +46,7 @@ public class UserService {
     // 실제 처리시간 계산을 위해 임의로 타이머처리
     try {
       // 1~10초의 랜덤 정수(1 이상 10 이하)
-      int randomSeconds = ThreadLocalRandom.current().nextInt(1, 11);
+      int randomSeconds = ThreadLocalRandom.current().nextInt(1, 2);
       long randomMillis = randomSeconds * 1000L;
       log.info(randomSeconds + "초 delay... Now Page:" + pageable.getPageNumber());
       Thread.sleep(randomMillis);
@@ -99,5 +99,13 @@ public class UserService {
   @Transactional
   public void deleteUser(Long id) {
     userRepository.deleteById(id);
+  }
+
+  @Transactional
+  public void searchUser(Long id) {
+    userRepository.findByNameContaining("홍길동");
+    userRepository.findByNameLike("%길동%");
+    userRepository.findByNameStartingWith("홍");
+    userRepository.findByNameEndingWith("동");
   }
 }
