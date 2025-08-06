@@ -3,9 +3,9 @@ package com.metanet.study;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.extern.slf4j.Slf4j;
 
-@SpringBootTest
+@Slf4j
 public class LombdaCaseTest {
 
   @Test

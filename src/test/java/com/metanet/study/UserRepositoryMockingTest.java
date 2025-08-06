@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import com.metanet.study.dept.entity.Department;
 import com.metanet.study.user.entity.User;
 import com.metanet.study.user.reopository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootTest
-@Transactional
 public class UserRepositoryMockingTest {
 
   @Test

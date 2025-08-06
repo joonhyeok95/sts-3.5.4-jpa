@@ -24,28 +24,19 @@ public class UserRepositoryTest {
 
   @Test
   void testInsertAndFind() {
-    // 저장
+    // given
     Department dept = new Department();
     dept.setId(100L);
     User user = User.builder().name("John Doe").email("john@example.com").department(dept).build();
-    // user.setName("John Doe");
-    // user.setEmail("john@example.com");
     User id = userRepository.save(user);
 
-    // 조회
+    // when
     Optional<User> users = userRepository.findById(id.getId());
 
-    // 검증
+    // then
     assertThat(users).isNotEmpty();
     assertThat(users.get().getName()).isEqualTo("John Doe");
     assertThat(users.get().getEmail()).isEqualTo("john@example.com");
-    Long time = 5000L;
-    try {
-      Thread.sleep(time);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
   }
 
   @Test
