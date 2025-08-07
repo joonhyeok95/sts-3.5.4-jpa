@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.metanet.study.global.domain.PageResponse;
+import com.metanet.study.role.entity.Role;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
+import com.metanet.study.user.service.UserRoleService;
 import com.metanet.study.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
   private final UserService userService;
+  private final UserRoleService userRoleService;
 
   // GlobalResponseWrapper 를 활용하기
   @GetMapping("/all")
@@ -71,5 +74,10 @@ public class UserController {
   public ResponseEntity<Integer> deleteUser(@PathVariable("id") long id) {
     userService.deleteUser(id);
     return ResponseEntity.ok(1);
+  }
+
+  @GetMapping("/{id}/roles")
+  public List<Role> getUserRoles(@PathVariable("id") long id) {
+    return userRoleService.userFindRoles(id);
   }
 }

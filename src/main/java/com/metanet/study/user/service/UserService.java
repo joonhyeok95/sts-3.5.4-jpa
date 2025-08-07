@@ -108,11 +108,12 @@ public class UserService {
     return result;
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public void searchUser(long id) {
     userRepository.findByNameContaining("홍길동");
     userRepository.findByNameLike("%길동%");
     userRepository.findByNameStartingWith("홍");
     userRepository.findByNameEndingWith("동");
   }
+
 }

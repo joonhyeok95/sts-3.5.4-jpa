@@ -2,6 +2,8 @@ package com.metanet.study.role.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.metanet.study.user.entity.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "role")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Role {
 
   @Id
@@ -30,6 +33,7 @@ public class Role {
   @Column(nullable = false, unique = true)
   private String name;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "role")
   private Set<UserRole> users = new HashSet<>();
 }
