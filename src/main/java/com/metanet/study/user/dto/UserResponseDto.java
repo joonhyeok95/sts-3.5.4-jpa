@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserResponseDto {
 
-  private Long id;
+  private long id;
   private String name;
   private String email;
   private DepartmentDto department;

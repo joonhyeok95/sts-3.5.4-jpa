@@ -3,6 +3,7 @@ package com.metanet.study.user.controller;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Validated
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -42,20 +44,20 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") Long id,
+  public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") long id,
       HttpServletRequest request) {
     return userService.getUserById(id).map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public int createUser(@Valid @RequestBody UserRequestDto dto) {
+  public long createUser(@Valid @RequestBody UserRequestDto dto) {
     UserResponseDto created = userService.createUser(dto);
-    return 1;
+    return created.getId();
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") Long id,
+  public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") long id,
       @Valid @RequestBody UserRequestDto dto) {
     try {
       UserResponseDto updated = userService.updateUser(id, dto);
@@ -66,8 +68,8 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+  public ResponseEntity<Integer> deleteUser(@PathVariable("id") long id) {
     userService.deleteUser(id);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(1);
   }
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRoleDto {
-  private Long id;
+  private long id;
   private Long userId;
   private String userName;
   private Long roleId;

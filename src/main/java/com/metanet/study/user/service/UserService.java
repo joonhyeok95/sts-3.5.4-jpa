@@ -57,7 +57,7 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
-  public Optional<UserResponseDto> getUserById(Long id) {
+  public Optional<UserResponseDto> getUserById(long id) {
     return userRepository.findById(id)
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
             .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
@@ -82,7 +82,7 @@ public class UserService {
   }
 
   @Transactional
-  public UserResponseDto updateUser(Long id, UserRequestDto dto) {
+  public UserResponseDto updateUser(long id, UserRequestDto dto) {
     User updatedUser = userRepository.findById(id).map(user -> {
       user.setName(dto.getName());
       user.setEmail(dto.getEmail());
@@ -97,12 +97,20 @@ public class UserService {
   }
 
   @Transactional
-  public void deleteUser(Long id) {
+  public int deleteUser(long id) {
+    int result = -1;
     userRepository.deleteById(id);
+    boolean deleted = userRepository.findById(id).isEmpty();
+    if (deleted) {
+      result = 1;
+    } else {
+      // throws BusinessException 처리 (삭제실패)
+    }
+    return result;
   }
 
   @Transactional
-  public void searchUser(Long id) {
+  public void searchUser(long id) {
     userRepository.findByNameContaining("홍길동");
     userRepository.findByNameLike("%길동%");
     userRepository.findByNameStartingWith("홍");

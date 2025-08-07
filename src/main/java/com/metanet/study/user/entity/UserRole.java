@@ -19,7 +19,7 @@ import lombok.Setter;
 public class UserRole {
   @Id
   @GeneratedValue
-  private Long id;
+  private long id;
 
   // 중간(조인) 엔티티 패턴으로 구성한다.
 
