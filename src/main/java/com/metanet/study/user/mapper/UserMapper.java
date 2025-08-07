@@ -1,6 +1,5 @@
 package com.metanet.study.user.mapper;
 
-import com.metanet.study.dept.mapper.DeptMapper;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
 import com.metanet.study.user.dto.UserRoleDto;
@@ -31,9 +30,9 @@ public class UserMapper {
     dto.setEmail(user.getEmail());
 
     if (user.getDepartment() != null) {
-      dto.setDepartment(DeptMapper.toResponseDto(user.getDepartment())); // 변환 호출
-    } else {
-      dto.setDepartment(null);
+      // dto.setDepartment(DeptMapper.toResponseDto(user.getDepartment())); // 변환 호출
+      dto.setDepartmentId(user.getDepartment().getId());
+      dto.setDepartmentName(user.getDepartment().getName());
     }
 
     return dto;

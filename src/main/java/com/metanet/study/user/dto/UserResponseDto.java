@@ -1,6 +1,5 @@
 package com.metanet.study.user.dto;
 
-import com.metanet.study.dept.dto.DepartmentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,10 @@ public class UserResponseDto {
   private long id;
   private String name;
   private String email;
-  private DepartmentDto department;
+
+  // 일반적인 API스펙으로 변경
+  // private DepartmentDto department;
+  private long departmentId;
+  private String departmentName;
 
 }

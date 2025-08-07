@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.metanet.study.dept.entity.Department;
-import com.metanet.study.dept.mapper.DeptMapper;
 import com.metanet.study.dept.repository.DepartmentRepository;
 import com.metanet.study.global.domain.PageResponse;
 import com.metanet.study.user.dto.UserRequestDto;
@@ -33,8 +32,8 @@ public class UserService {
     // 대규모 데이터 OOM 발생 처리 개선 필요
     return userRepository.findAll().stream()
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
-            .build())
+            .email(user.getEmail()).departmentId(user.getDepartment().getId())
+            .departmentName(user.getDepartment().getName()).build())
         .collect(Collectors.toList());
   }
 
@@ -60,15 +59,15 @@ public class UserService {
   public Optional<UserResponseDto> getUserById(long id) {
     return userRepository.findById(id)
         .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).department(DeptMapper.toResponseDto(user.getDepartment()))
-            .build());
+            .email(user.getEmail()).departmentId(user.getDepartment().getId())
+            .departmentName(user.getDepartment().getName()).build());
   }
 
   @Transactional
   public UserResponseDto createUser(UserRequestDto dto) {
     Department department = null;
-    if (dto.getDepartment().getId() != null) {
-      department = departmentRepository.findById(dto.getDepartment().getId())
+    if (dto.getDepartmentId() > -1) {
+      department = departmentRepository.findById(dto.getDepartmentId())
           .orElseThrow(() -> new RuntimeException("Department not found"));
     }
     User user = new User();
@@ -78,7 +77,7 @@ public class UserService {
     User saved = userRepository.save(user);
 
     return new UserResponseDto(saved.getId(), saved.getName(), saved.getEmail(),
-        DeptMapper.toResponseDto(saved.getDepartment()));
+        saved.getDepartment().getId(), saved.getDepartment().getName());
   }
 
   @Transactional
@@ -87,13 +86,13 @@ public class UserService {
       user.setName(dto.getName());
       user.setEmail(dto.getEmail());
 
-      Department department = departmentRepository.findById(dto.getDepartment().getId())
+      Department department = departmentRepository.findById(dto.getDepartmentId())
           .orElseThrow(() -> new RuntimeException("Department not found"));
       user.setDepartment(department);
       return userRepository.save(user);
     }).orElseThrow(() -> new RuntimeException("User not found"));
     return new UserResponseDto(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),
-        DeptMapper.toResponseDto(updatedUser.getDepartment()));
+        updatedUser.getDepartment().getId(), updatedUser.getDepartment().getName());
   }
 
   @Transactional

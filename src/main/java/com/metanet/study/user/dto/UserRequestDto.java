@@ -1,6 +1,5 @@
 package com.metanet.study.user.dto;
 
-import com.metanet.study.dept.dto.DepartmentDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -22,6 +21,8 @@ public class UserRequestDto {
   @Email(message = "Email should be valid")
   private String email;
 
-  private DepartmentDto department;
+  // 일반적인 API스펙으로 변경
+  // private DepartmentDto department;
+  private long departmentId;
 
 }
