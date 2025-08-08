@@ -31,4 +31,18 @@ public class Department {
   @BatchSize(size = 100)
   private List<User> users;
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof Department))
+      return false;
+    Department that = (Department) o;
+    return id != null && id.equals(that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return 31;
+  }
 }

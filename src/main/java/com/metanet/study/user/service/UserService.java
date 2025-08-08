@@ -1,8 +1,11 @@
 package com.metanet.study.user.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +33,47 @@ public class UserService {
   @Transactional(readOnly = true)
   public List<UserResponseDto> getAllUsers() {
     // 대규모 데이터 OOM 발생 처리 개선 필요
-    return userRepository.findAll().stream()
-        .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).departmentId(user.getDepartment().getId())
-            .departmentName(user.getDepartment().getName()).build())
-        .collect(Collectors.toList());
+    /*
+     * 아래 코드는 모든 유저의 department id in 조건에 모든 데이터가 들어감.
+     * 
+     * 실행로그: select d1_0.id,d1_0.name from department d1_0 where d1_0.id in
+     * (100,200,300,400,404,405,101,102,202,203,303,304,500,505,506,600,601,NULL,NULL,NULL,NULL,NULL
+     * ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+     * NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+     * NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+     * NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+     * NULL,NULL,NULL,NULL,NULL,NULL);
+     */
+    // return userRepository.findAll().stream()
+    // .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
+    // .email(user.getEmail()).departmentId(user.getDepartment().getId())
+    // .departmentName(user.getDepartment().getName()).build())
+    // .collect(Collectors.toList());
+
+    /*
+     * 사용자 데이터에 부서테이블 성능개선
+     * 
+     * 실행로그: select d1_0.id,d1_0.name from department d1_0 where d1_0.id in
+     * (100,200,300,400,404,405,101,102,202,203,303,304,500,505,506,600,601);
+     */
+    List<User> users = userRepository.findAll();
+    List<Long> departmentIds = users.stream().map(User::getDepartment).filter(Objects::nonNull)
+        .map(Department::getId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+    List<Department> departments = departmentRepository.findAllById(departmentIds);
+    // 1) departmentId를 키로 department 객체를 빠르게 찾기 위한 맵 생성
+    Map<Long, Department> departmentMap = departments.stream().filter(Objects::nonNull)
+        .collect(Collectors.toMap(Department::getId, Function.identity()));
+
+    // 2) users -> UserResponseDto 변환
+    return users.stream().map(user -> {
+      Long deptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+
+      Department dept = deptId != null ? departmentMap.get(deptId) : null;
+
+      return UserResponseDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail())
+          .departmentId(deptId).departmentName(dept != null ? dept.getName() : null).build();
+    }).collect(Collectors.toList());
   }
 
   // 페이징처리
