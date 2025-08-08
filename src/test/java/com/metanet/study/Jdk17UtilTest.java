@@ -1,5 +1,6 @@
 package com.metanet.study;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,8 @@ public class Jdk17UtilTest {
 
   @Test
   public void stringUtilTest() {
+
+    // given
     String a = "me ta";
     String multiline = """
         안녕하시오.
@@ -96,10 +99,15 @@ public class Jdk17UtilTest {
 
     log.info("format(\"Hello %s!\", \"JUnit\"): {}", String.format("Hello %s!", "JUnit"));
     log.info("formatted(\"JUnit\"): {}", "Hello %s!".formatted("JUnit"));
+
+    // when
+    // then
   }
 
   @Test
   public void objectUtilsMethodsTest() {
+
+    // given
     Object obj1 = null;
     Object obj2 = "Hello";
     Object obj3 = "Hello";
@@ -137,14 +145,25 @@ public class Jdk17UtilTest {
     log.info("Objects.toString(obj2): {}", Objects.toString(obj2));
     log.info("Objects.toString(obj1): {}", Objects.toString(obj1)); // "null"
     log.info("Objects.toString(obj1, \"empty\"): {}", Objects.toString(obj1, "empty"));
+
+    // when
+    // then
+
   }
 
   @Test
   public void dateTest() {
+
+    // given
     LocalDate today = LocalDate.now();
     LocalDate nextWeek = today.plusWeeks(1);
-    log.info("오늘:{}, 다음주{}", today, nextWeek.format(DateTimeFormatter.ISO_DATE));
+
+    // when
     long daysBetween = ChronoUnit.DAYS.between(today, nextWeek);
+    log.info("오늘:{}, 다음주{}", today, nextWeek.format(DateTimeFormatter.ISO_DATE));
     log.info("오늘 다음주 요일 차이:{}", String.valueOf(daysBetween)); // 항상 7
+
+    // then
+    assertThat(daysBetween).isEqualTo(7);
   }
 }

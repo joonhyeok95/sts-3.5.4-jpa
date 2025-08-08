@@ -15,8 +15,8 @@ public class UserRepositoryMockingTest {
 
   @Test
   void testInsertAndFind() {
-    UserRepository userRepository = Mockito.mock(UserRepository.class);
     // given
+    UserRepository userRepository = Mockito.mock(UserRepository.class);
     Department dept = new Department();
     dept.setId(100L);
     User user = User.builder().name("John Doe").email("john@example.com").department(dept).build();

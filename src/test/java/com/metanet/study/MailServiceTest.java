@@ -65,6 +65,8 @@ public class MailServiceTest {
    */
   @Test
   public void testTemplateRendering() {
+
+    // given
     // 실제 variables 세팅 (이전에 쓰던 values 사용)
     Map<String, Object> variables = new HashMap<>();
     variables.put("name", "Tester");
@@ -73,10 +75,14 @@ public class MailServiceTest {
     Context context = new Context();
     context.setVariables(variables);
 
+    // when
     // templateEngine은 @Autowired 혹은 테스트에서 주입받은 실제 빈이어야 함
     String renderedHtml = templateEngine.process("email/email-template", context);
 
     System.out.println("Rendered Template HTML:\n" + renderedHtml);
+
+    // then
+
   }
 
   /*
@@ -84,8 +90,10 @@ public class MailServiceTest {
    */
   @Test
   public void testListTemplateFiles() throws IOException {
+    // given
     ClassPathResource templatesDir = new ClassPathResource("templates/email/");
 
+    // when
     if (templatesDir.exists() && templatesDir.getFile().isDirectory()) {
       File[] files = templatesDir.getFile().listFiles();
       System.out.println("Templates in email folder:");
@@ -97,6 +105,8 @@ public class MailServiceTest {
     } else {
       System.out.println("Template folder does not exist or is not a directory.");
     }
+    // then
+
   }
 
 }

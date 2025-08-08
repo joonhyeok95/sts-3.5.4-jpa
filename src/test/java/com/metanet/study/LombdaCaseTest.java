@@ -10,10 +10,15 @@ public class LombdaCaseTest {
 
   @Test
   public void case1() {
+
+    // given
     List<String> users = List.of("Alice", "Bob", "Charlie");
 
+    // when
     users.forEach(u -> System.out.println("User: " + u));
     users.stream().filter(u -> u.startsWith("A")).collect(Collectors.toList());
+
+    // then
 
   }
 

@@ -43,14 +43,19 @@ public class UserRepositoryTest {
 
   @Test
   void testSearch() {
-    List<User> user1 = userRepository.findByNameContaining("동네");
+    // given
+    List<User> user1 = userRepository.findByNameContaining("임준혁23");
     // List<User> user2 = userRepository.findByNameLike("%준%");
     // List<User> user3 = userRepository.findByNameStartingWith("임");
     // List<User> user4 = userRepository.findByNameEndingWith("혁");
+
+    // when
     log.info("user1:{}", user1.get(0).getUserRoles().size());
     Set<Role> roles = user1.get(0).getRoles();
     for (Role role : roles) {
       System.out.println("  Role: " + role.getName());
     }
+    // when
+    assertThat(roles.stream().count()).isEqualTo(3);
   }
 }
