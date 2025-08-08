@@ -36,6 +36,7 @@ public class UserController {
   private final UserRoleService userRoleService;
 
   // GlobalResponseWrapper 를 활용하기
+  // API Response 규격이 없는 API 케이스 테스트
   @GetMapping("/all")
   public List<UserResponseDto> getAllUsers(HttpServletRequest request) {
     List<UserResponseDto> users = userService.getAllUsers();
