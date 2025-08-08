@@ -2,6 +2,7 @@ package com.metanet.study.user.controller;
 
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.metanet.study.global.domain.PageResponse;
+import com.metanet.study.global.model.ResponseEntityUtil;
 import com.metanet.study.role.dto.RoleDto;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
@@ -77,7 +79,8 @@ public class UserController {
   }
 
   @GetMapping("/{id}/roles")
-  public List<RoleDto> getUserRoles(@PathVariable("id") long id) {
-    return userRoleService.userFindRoles(id);
+  public List<RoleDto> getUserRoles(@PathVariable("id") long id, HttpServletRequest request) {
+    return ResponseEntityUtil.buildResponse(userRoleService.userFindRoles(id), HttpStatus.OK,
+        "User retrieved successfully", request);
   }
 }
