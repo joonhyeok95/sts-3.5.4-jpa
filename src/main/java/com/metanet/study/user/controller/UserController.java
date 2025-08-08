@@ -52,7 +52,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ApiResponse<Optional<UserResponseDto>>> getUser(@PathVariable("id") long id,
+  public ResponseEntity<ApiResponse<Optional<Object>>> getUser(@PathVariable("id") long id,
       HttpServletRequest request) {
     return ResponseEntityUtil.buildResponse(userService.getUserById(id), HttpStatus.OK,
         "User retrieved successfully", request);

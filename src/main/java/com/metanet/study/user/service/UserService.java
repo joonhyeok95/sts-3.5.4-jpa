@@ -4,20 +4,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import com.metanet.study.dept.entity.Department;
 import com.metanet.study.dept.repository.DepartmentRepository;
 import com.metanet.study.global.domain.PageResponse;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
 import com.metanet.study.user.entity.User;
-import com.metanet.study.user.mapper.UserMapper;
 import com.metanet.study.user.reopository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,33 +78,58 @@ public class UserService {
   // 페이징처리
   @Transactional(readOnly = true)
   public PageResponse<UserResponseDto> getAllUsersPage(Pageable pageable) {
-    Page<User> page = userRepository.findAll(pageable);
-    Page<UserResponseDto> userPage = page.map(UserMapper::toResponseDto);
-    // 실제 처리시간 계산을 위해 임의로 타이머처리
-    try {
-      // 1~10초의 랜덤 정수(1 이상 10 이하)
-      int randomSeconds = ThreadLocalRandom.current().nextInt(1, 2);
-      long randomMillis = randomSeconds * 1000L;
-      log.info(randomSeconds + "초 delay... Now Page:" + pageable.getPageNumber());
-      Thread.sleep(randomMillis);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    return new PageResponse<>(userPage);
+    /*
+     * 1.사용자 정보를 조회. 2.사용자 정보에서 부서아이디 목록 추출. 3.부서아이디 목록으로 조회. 4.부서Map 생성으로 성능 개선(List 탐색보다 성능 우위).
+     * 5.리턴DTO 로 데이터 조합.
+     */
+    Page<User> userPage = userRepository.findAll(pageable);
+    // Page 객체는 getContent() 로 안전하게 리스트 추출, null 필터링 포함
+    List<Long> departmentIds = userPage.getContent().stream().map(User::getDepartment)
+        .filter(Objects::nonNull).map(Department::getId).filter(Objects::nonNull).distinct()
+        .collect(Collectors.toList());
+    List<Department> departments = departmentRepository.findAllById(departmentIds);
+    log.info("departments size: {}", departments.size());
+    Map<Long, Department> departmentMap =
+        departments.stream().filter(Objects::nonNull).collect(Collectors.toMap(Department::getId,
+            Function.identity(), (existing, replacement) -> existing));
+
+    Page<UserResponseDto> userDtoPage = userPage.map(user -> {
+      Long deptId = null;
+      String deptName = null;
+      if (!ObjectUtils.isEmpty(user.getDepartment())) {
+        deptId = user.getDepartment().getId();
+        if (deptId != null) {
+          Department dept = departmentMap.get(deptId);
+          deptName = (dept != null) ? dept.getName() : null;
+        }
+      }
+
+      return UserResponseDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail())
+          .departmentId(deptId).departmentName(deptName).build();
+    });
+
+    return new PageResponse<>(userDtoPage);
   }
 
   @Transactional(readOnly = true)
-  public Optional<UserResponseDto> getUserById(long id) {
-    return userRepository.findById(id)
-        .map(user -> UserResponseDto.builder().id(user.getId()).name(user.getName())
-            .email(user.getEmail()).departmentId(user.getDepartment().getId())
-            .departmentName(user.getDepartment().getName()).build());
+  public Optional<Object> getUserById(long id) {
+    return userRepository.findById(id).map(user -> {
+      Long deptId = null;
+      String deptName = null;
+
+      if (user.getDepartment() != null) {
+        deptId = user.getDepartment().getId();
+        deptName = user.getDepartment().getName();
+      }
+      return UserResponseDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail())
+          .departmentId(deptId).departmentName(deptName).build();
+    });
   }
 
   @Transactional
   public UserResponseDto createUser(UserRequestDto dto) {
     Department department = null;
-    if (dto.getDepartmentId() > -1) {
+    if (!ObjectUtils.isEmpty(dto.getDepartmentId())) {
       department = departmentRepository.findById(dto.getDepartmentId())
           .orElseThrow(() -> new RuntimeException("Department not found"));
     }
@@ -115,8 +139,15 @@ public class UserService {
     user.setDepartment(department);
     User saved = userRepository.save(user);
 
-    return new UserResponseDto(saved.getId(), saved.getName(), saved.getEmail(),
-        saved.getDepartment().getId(), saved.getDepartment().getName());
+    Long departmentId = null;
+    String departmentName = null;
+    if (saved.getDepartment() != null) {
+      departmentId = saved.getDepartment().getId();
+      departmentName = saved.getDepartment().getName();
+    }
+
+    return new UserResponseDto(saved.getId(), saved.getName(), saved.getEmail(), departmentId,
+        departmentName);
   }
 
   @Transactional
@@ -125,13 +156,27 @@ public class UserService {
       user.setName(dto.getName());
       user.setEmail(dto.getEmail());
 
-      Department department = departmentRepository.findById(dto.getDepartmentId())
-          .orElseThrow(() -> new RuntimeException("Department not found"));
-      user.setDepartment(department);
+      if (dto.getDepartmentId() == null) {
+        // 부서 해제
+        user.setDepartment(null);
+      } else {
+        Department department = departmentRepository.findById(dto.getDepartmentId())
+            .orElseThrow(() -> new RuntimeException("Department not found"));
+        user.setDepartment(department);
+      }
+
       return userRepository.save(user);
     }).orElseThrow(() -> new RuntimeException("User not found"));
+
+    Long deptId = null;
+    String deptName = null;
+    if (updatedUser.getDepartment() != null) {
+      deptId = updatedUser.getDepartment().getId();
+      deptName = updatedUser.getDepartment().getName();
+    }
+
     return new UserResponseDto(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),
-        updatedUser.getDepartment().getId(), updatedUser.getDepartment().getName());
+        deptId, deptName);
   }
 
   @Transactional

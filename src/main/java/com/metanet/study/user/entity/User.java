@@ -39,7 +39,7 @@ public class User {
   private String email;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "department_id") // FK 컬럼명 지정
+  @JoinColumn(name = "department_id", nullable = true) // FK 컬럼명 지정
   private Department department;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

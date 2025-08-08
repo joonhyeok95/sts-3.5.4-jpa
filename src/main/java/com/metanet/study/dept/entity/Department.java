@@ -1,6 +1,7 @@
 package com.metanet.study.dept.entity;
 
 import java.util.List;
+import java.util.Objects;
 import org.hibernate.annotations.BatchSize;
 import com.metanet.study.user.entity.User;
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ public class Department {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private long id;
 
   private String name;
 
@@ -38,11 +39,11 @@ public class Department {
     if (!(o instanceof Department))
       return false;
     Department that = (Department) o;
-    return id != null && id.equals(that.id);
+    return Objects.equals(id, that.id);
   }
 
   @Override
   public int hashCode() {
-    return 31;
+    return Objects.hash(id);
   }
 }
