@@ -1,6 +1,7 @@
 package com.metanet.study.user.controller;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.metanet.study.global.domain.ApiResponse;
 import com.metanet.study.global.domain.PageResponse;
 import com.metanet.study.global.model.ResponseEntityUtil;
 import com.metanet.study.role.dto.RoleDto;
@@ -45,42 +47,45 @@ public class UserController {
   public ResponseEntity<?> getAllUsers(Pageable pageable, HttpServletRequest request) {
 
     PageResponse<UserResponseDto> page = userService.getAllUsersPage(pageable);
-    return ResponseEntity.ok(page);
+    return ResponseEntityUtil.buildResponse(page, HttpStatus.OK, "User retrieved successfully",
+        request);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") long id,
+  public ResponseEntity<ApiResponse<Optional<UserResponseDto>>> getUser(@PathVariable("id") long id,
       HttpServletRequest request) {
-    return userService.getUserById(id).map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    return ResponseEntityUtil.buildResponse(userService.getUserById(id), HttpStatus.OK,
+        "User retrieved successfully", request);
   }
 
   @PostMapping
-  public long createUser(@Valid @RequestBody UserRequestDto dto) {
+  public ResponseEntity<ApiResponse<Long>> createUser(@Valid @RequestBody UserRequestDto dto,
+      HttpServletRequest request) {
     UserResponseDto created = userService.createUser(dto);
-    return created.getId();
+    return ResponseEntityUtil.buildResponse(created.getId(), HttpStatus.CREATED,
+        "User created successfully", request);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponseDto> updateUser(@PathVariable("id") long id,
-      @Valid @RequestBody UserRequestDto dto) {
-    try {
-      UserResponseDto updated = userService.updateUser(id, dto);
-      return ResponseEntity.ok(updated);
-    } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
-    }
+  public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@PathVariable("id") long id,
+      @Valid @RequestBody UserRequestDto dto, HttpServletRequest request) {
+    UserResponseDto updated = userService.updateUser(id, dto);
+    return ResponseEntityUtil.buildResponse(updated, HttpStatus.OK, "User Modify successfully",
+        request);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Integer> deleteUser(@PathVariable("id") long id) {
+  public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable("id") long id,
+      HttpServletRequest request) {
     userService.deleteUser(id);
-    return ResponseEntity.ok(1);
+    return ResponseEntityUtil.buildResponse("User deleted successfully", HttpStatus.OK,
+        "Delete success", request);
   }
 
   @GetMapping("/{id}/roles")
-  public List<RoleDto> getUserRoles(@PathVariable("id") long id, HttpServletRequest request) {
+  public ResponseEntity<ApiResponse<List<RoleDto>>> getUserRoles(@PathVariable("id") long id,
+      HttpServletRequest request) {
     return ResponseEntityUtil.buildResponse(userRoleService.userFindRoles(id), HttpStatus.OK,
-        "User retrieved successfully", request);
+        "User Roles retrieved successfully", request);
   }
 }
