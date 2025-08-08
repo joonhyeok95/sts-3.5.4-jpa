@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.metanet.study.global.domain.PageResponse;
-import com.metanet.study.role.entity.Role;
+import com.metanet.study.role.dto.RoleDto;
 import com.metanet.study.user.dto.UserRequestDto;
 import com.metanet.study.user.dto.UserResponseDto;
 import com.metanet.study.user.service.UserRoleService;
@@ -77,7 +77,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}/roles")
-  public List<Role> getUserRoles(@PathVariable("id") long id) {
+  public List<RoleDto> getUserRoles(@PathVariable("id") long id) {
     return userRoleService.userFindRoles(id);
   }
 }

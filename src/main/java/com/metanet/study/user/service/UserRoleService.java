@@ -1,9 +1,11 @@
 package com.metanet.study.user.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.metanet.study.role.dto.RoleDto;
 import com.metanet.study.role.entity.Role;
 import com.metanet.study.role.repository.RoleRepository;
 import com.metanet.study.user.entity.User;
@@ -24,18 +26,16 @@ public class UserRoleService {
   private final RoleRepository roleRepository;
 
   @Transactional(readOnly = true)
-  public List<Role> userFindRoles(Long userId) {
-    List<Role> roles = new ArrayList<>();
+  public List<RoleDto> userFindRoles(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
-    for (UserRole userRole : user.getUserRoles()) {
-      Long roleId = userRole.getRole().getId();
-      Role role = roleRepository.findById(roleId)
-          .orElseThrow(() -> new EntityNotFoundException("Role not found with id " + roleId));
+    List<Long> roleIds = user.getUserRoles().stream().map(UserRole::getRole)
+        .filter(Objects::nonNull).map(Role::getId).filter(Objects::nonNull).distinct() // 중복 제거
+        .collect(Collectors.toList());
+    log.info("roleIds size: {}, values: {}", roleIds.size(), roleIds);
+    List<Role> roles = roleRepository.findAllById(roleIds);
 
-      roles.add(role);
-    }
-    return roles;
+    return roles.stream().map(RoleDto::new).collect(Collectors.toList());
   }
 
 
