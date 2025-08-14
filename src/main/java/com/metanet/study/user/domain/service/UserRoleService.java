@@ -29,8 +29,8 @@ public class UserRoleService {
   public List<RoleDto> userFindRoles(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
-    List<Long> roleIds = user.getUserRoles().stream().map(UserRole::getRole)
-        .filter(Objects::nonNull).map(Role::getId).filter(Objects::nonNull).distinct() // 중복 제거
+    List<UserRole> ur = userRoleRepository.findAllByUserId(userId);
+    List<Long> roleIds = ur.stream().map(t -> t.getRoleId()).filter(Objects::nonNull).distinct() // 중복제거
         .collect(Collectors.toList());
     log.info("roleIds size: {}, values: {}", roleIds.size(), roleIds);
     List<Role> roles = roleRepository.findAllById(roleIds);

@@ -1,15 +1,11 @@
 package com.metanet.study.role.domain.model;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-import com.metanet.study.user.domain.model.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +29,8 @@ public class Role {
   private String name;
 
   // @JsonIgnore
-  @OneToMany(mappedBy = "role")
-  private Set<UserRole> users = new HashSet<>();
+  // @OneToMany(mappedBy = "role")
+  // private Set<UserRole> users = new HashSet<>();
 
 
   /*

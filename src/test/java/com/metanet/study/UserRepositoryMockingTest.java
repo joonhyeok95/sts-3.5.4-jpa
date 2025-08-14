@@ -19,7 +19,8 @@ public class UserRepositoryMockingTest {
     UserRepository userRepository = Mockito.mock(UserRepository.class);
     Department dept = new Department();
     dept.setId(100L);
-    User user = User.builder().name("John Doe").email("john@example.com").department(dept).build();
+    User user = User.builder().name("John Doe").email("john@example.com").departmentId(dept.getId())
+        .build();
     List<User> dummyList = new ArrayList<>();
     dummyList.add(user);
 

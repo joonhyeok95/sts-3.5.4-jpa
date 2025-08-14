@@ -1,7 +1,6 @@
 package com.metanet.study.user.domain.model;
 
 import java.time.LocalDateTime;
-import com.metanet.study.role.domain.model.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,11 +24,11 @@ public class UserRole {
   // @ManyToOne(fetch = FetchType.LAZY)
   // 연관관계 매핑 없이 FK 필드만 사용
   @Column(name = "user_id", nullable = false)
-  private User user;
+  private Long userId;
 
   // @ManyToOne(fetch = FetchType.LAZY)
   @Column(name = "role_id", nullable = false)
-  private Role role;
+  private Long roleId;
 
   // 추가 컬럼: 예시 (부여일자, 상태 등)
   private LocalDateTime grantedAt;

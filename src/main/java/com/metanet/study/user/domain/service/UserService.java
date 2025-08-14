@@ -56,8 +56,8 @@ public class UserService {
      * (100,200,300,400,404,405,101,102,202,203,303,304,500,505,506,600,601);
      */
     List<User> users = userRepository.findAll();
-    List<Long> departmentIds = users.stream().map(User::getDepartment).filter(Objects::nonNull)
-        .map(Department::getId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+    List<Long> departmentIds = users.stream().map(User::getDepartmentId).filter(Objects::nonNull)
+        .distinct().collect(Collectors.toList());
 
     List<Department> departments = departmentRepository.findAllById(departmentIds);
     // 1) departmentId를 키로 department 객체를 빠르게 찾기 위한 맵 생성
@@ -66,7 +66,7 @@ public class UserService {
 
     // 2) users -> UserResponseDto 변환
     return users.stream().map(user -> {
-      Long deptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
+      Long deptId = ObjectUtils.isEmpty(user.getDepartmentId()) ? user.getDepartmentId() : null;
 
       Department dept = deptId != null ? departmentMap.get(deptId) : null;
 
@@ -84,9 +84,8 @@ public class UserService {
      */
     Page<User> userPage = userRepository.findAll(pageable);
     // Page 객체는 getContent() 로 안전하게 리스트 추출, null 필터링 포함
-    List<Long> departmentIds = userPage.getContent().stream().map(User::getDepartment)
-        .filter(Objects::nonNull).map(Department::getId).filter(Objects::nonNull).distinct()
-        .collect(Collectors.toList());
+    List<Long> departmentIds = userPage.getContent().stream().map(t -> t.getDepartmentId())
+        .filter(Objects::nonNull).filter(Objects::nonNull).distinct().collect(Collectors.toList());
     List<Department> departments = departmentRepository.findAllById(departmentIds);
     log.info("departments size: {}", departments.size());
     Map<Long, Department> departmentMap =
@@ -96,8 +95,8 @@ public class UserService {
     Page<UserResponseDto> userDtoPage = userPage.map(user -> {
       Long deptId = null;
       String deptName = null;
-      if (!ObjectUtils.isEmpty(user.getDepartment())) {
-        deptId = user.getDepartment().getId();
+      if (!ObjectUtils.isEmpty(user.getDepartmentId())) {
+        deptId = user.getDepartmentId();
         if (deptId != null) {
           Department dept = departmentMap.get(deptId);
           deptName = (dept != null) ? dept.getName() : null;
@@ -117,9 +116,9 @@ public class UserService {
       Long deptId = null;
       String deptName = null;
 
-      if (user.getDepartment() != null) {
-        deptId = user.getDepartment().getId();
-        deptName = user.getDepartment().getName();
+      if (!ObjectUtils.isEmpty(user.getDepartmentId())) {
+        deptId = user.getDepartmentId();
+        // deptName = user.getDepartment().getName();
       }
       return UserResponseDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail())
           .departmentId(deptId).departmentName(deptName).build();
@@ -136,14 +135,14 @@ public class UserService {
     User user = new User();
     user.setName(dto.getName());
     user.setEmail(dto.getEmail());
-    user.setDepartment(department);
+    user.setDepartmentId(department.getId());
     User saved = userRepository.save(user);
 
     Long departmentId = null;
     String departmentName = null;
-    if (saved.getDepartment() != null) {
-      departmentId = saved.getDepartment().getId();
-      departmentName = saved.getDepartment().getName();
+    if (!ObjectUtils.isEmpty(saved.getDepartmentId())) {
+      departmentId = saved.getDepartmentId();
+      // departmentName = saved.getDepartmentName();
     }
 
     return new UserResponseDto(saved.getId(), saved.getName(), saved.getEmail(), departmentId,
@@ -158,11 +157,11 @@ public class UserService {
 
       if (dto.getDepartmentId() == null) {
         // 부서 해제
-        user.setDepartment(null);
+        user.setDepartmentId(null);
       } else {
         Department department = departmentRepository.findById(dto.getDepartmentId())
             .orElseThrow(() -> new RuntimeException("Department not found"));
-        user.setDepartment(department);
+        user.setDepartmentId(department.getId());
       }
 
       return userRepository.save(user);
@@ -170,9 +169,9 @@ public class UserService {
 
     Long deptId = null;
     String deptName = null;
-    if (updatedUser.getDepartment() != null) {
-      deptId = updatedUser.getDepartment().getId();
-      deptName = updatedUser.getDepartment().getName();
+    if (!ObjectUtils.isEmpty(updatedUser.getDepartmentId())) {
+      deptId = updatedUser.getDepartmentId();
+      // deptName = updatedUser.getDepartment().getName();
     }
 
     return new UserResponseDto(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),

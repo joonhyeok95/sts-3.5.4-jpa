@@ -1,21 +1,11 @@
 package com.metanet.study.user.domain.model;
 
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import com.metanet.study.dept.domain.model.Department;
-import com.metanet.study.role.domain.model.Role;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,16 +28,10 @@ public class User {
 
   private String email;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "department_id", nullable = true) // FK 컬럼명 지정
-  private Department department;
+  @Column(name = "department_id", nullable = true) // FK 컬럼명 지정
+  private Long departmentId;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<UserRole> userRoles = new HashSet<>();
+  @Column(name = "role_id", nullable = true) // FK 컬럼명 지정
+  private Long roleId;
 
-  // 중간조인 UserRole에서 Role만 추출하는 편의 메서드 추가
-  public Set<Role> getRoles() {
-    return userRoles.stream().map(UserRole::getRole).filter(Objects::nonNull)
-        .collect(Collectors.toSet());
-  }
 }
