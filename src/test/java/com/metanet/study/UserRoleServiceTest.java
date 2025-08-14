@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.metanet.study.role.dto.RoleDto;
-import com.metanet.study.user.service.UserRoleService;
+import com.metanet.study.role.domain.service.dto.RoleDto;
+import com.metanet.study.user.domain.service.UserRoleService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 

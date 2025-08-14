@@ -11,7 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import com.metanet.study.mail.service.MailService;
+import com.metanet.study.mail.domain.service.MailService;
 import jakarta.mail.internet.MimeMessage;
 
 @SpringBootTest

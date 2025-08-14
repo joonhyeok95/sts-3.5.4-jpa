@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import com.metanet.study.dept.entity.Department;
-import com.metanet.study.user.entity.User;
-import com.metanet.study.user.reopository.UserRepository;
+import com.metanet.study.dept.domain.model.Department;
+import com.metanet.study.user.domain.model.User;
+import com.metanet.study.user.domain.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

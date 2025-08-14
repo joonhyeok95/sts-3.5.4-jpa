@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import com.metanet.study.dept.entity.Department;
-import com.metanet.study.role.entity.Role;
-import com.metanet.study.role.repository.RoleRepository;
-import com.metanet.study.user.entity.User;
-import com.metanet.study.user.entity.UserRole;
-import com.metanet.study.user.reopository.UserRepository;
+import com.metanet.study.dept.domain.model.Department;
+import com.metanet.study.role.domain.model.Role;
+import com.metanet.study.role.domain.repository.RoleRepository;
+import com.metanet.study.user.domain.model.User;
+import com.metanet.study.user.domain.model.UserRole;
+import com.metanet.study.user.domain.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
