@@ -2,13 +2,11 @@ package com.metanet.study.user.entity;
 
 import java.time.LocalDateTime;
 import com.metanet.study.role.entity.Role;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,12 +22,13 @@ public class UserRole {
 
   // 중간(조인) 엔티티 패턴으로 구성한다.
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
+  // @ManyToOne(fetch = FetchType.LAZY)
+  // 연관관계 매핑 없이 FK 필드만 사용
+  @Column(name = "user_id", nullable = false)
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "role_id")
+  // @ManyToOne(fetch = FetchType.LAZY)
+  @Column(name = "role_id", nullable = false)
   private Role role;
 
   // 추가 컬럼: 예시 (부여일자, 상태 등)
